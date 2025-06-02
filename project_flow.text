@@ -1,0 +1,69 @@
+project_flow.txt
+Blog
+-----
+Features
+
+-users(reader,writer,admin)
+-posts
+
+posts
+-------
+-view posts --> reader [no auth]
+-create posts--> writer [auth]
+-public post--> admin[auth](bublic,reject)
+
+user journey
+reader -> Can view all posts 
+        -> detail view
+
+writer -> Register
+       -> login
+       -> profile *
+       -> my own posts(public, reject)
+       -> create, edit, delete
+
+admin   -> login
+        -> all posts <- writer
+        -> delete view
+        -> public
+        -> reject(reason)
+
+Category [hardcode]
+
+1.DB create
+    - category
+        -id
+        -name
+
+    - user
+        - id ()
+        - name
+        - email
+        -password
+        - role (writer, admin)
+
+    -posts
+        - id [PK,AI]
+        - title [varchar]
+        - content [text]
+        - author_id(FK)
+        - category_id [FK]
+        - status[create,public, reject]
+        - published_at[timestamp,NULL]
+        - created_at(timestamp)
+
+2. Design (front side)
+    -reader
+        -all blogs posts (home)
+        - detail post
+    writer
+        -Register/login
+        -CRUD(create, retrieve, update, delete)-blog posts
+3. Design(Back side)
+    -admin
+        -CRUD (categories)
+        -post list
+        -post detail
+        
+
+

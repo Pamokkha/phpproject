@@ -19,16 +19,17 @@ reader -> Can view all posts
 writer -> Register
        -> login
        -> profile *
-       -> my own posts(public, reject)
+       -> my own posts(create, public, reject)
        -> create, edit, delete
 
 admin   -> login
-        -> all posts <- writer
+        -> all posts <- writer created posts
         -> delete view
         -> public
         -> reject(reason)
 
 Category [hardcode]
+-create, retrieve, update, delete
 
 1.DB create
     - category
@@ -64,6 +65,17 @@ Category [hardcode]
         -CRUD (categories)
         -post list
         -post detail
+
+        --------------------
+
+        status
+        -id(pk)
+        -name(varchar)
+        -gender(varchar)
+        -address(text)
+
+
+
         
 
 

@@ -1,81 +1,110 @@
-project_flow.txt
 Blog
------
+====
+
 Features
+--------
+- User (reader, writer, admin)
+- Posts 
+  - category
 
--users(reader,writer,admin)
--posts
 
-posts
--------
--view posts --> reader [no auth]
--create posts--> writer [auth]
--public post--> admin[auth](bublic,reject)
+Posts
+-----
+- View Posts  -> reader [no auth]
+- Create Posts -> writer [auth]
+- Public Posts -> admin [auth] (public, reject)
 
-user journey
-reader -> Can view all posts 
+
+User Journey
+------------
+Reader  -> Can view all posts 
         -> detail view
+        -> filter by category
 
-writer -> Register
-       -> login
-       -> profile *
-       -> my own posts(create, public, reject)
-       -> create, edit, delete
+Juu     -> Register 
+        -> Login
+        -> Profile *
+        -> my own posts (create, public, reject)
+        -> crete, edit, delete, retrieve
 
-admin   -> login
-        -> all posts <- writer created posts
-        -> delete view
-        -> public
-        -> reject(reason)
+Mg MG   -> Login
+        -> all posts <- writers' created posts
+        -> detail view 
+        -> Public 
+        -> Reject (reason)
 
 Category [hardcode]
--create, retrieve, update, delete
+ - Create, retrieve, update, delete
 
-1.DB create
-    - category
-        -id
-        -name
 
-    - user
-        - id ()
-        - name
-        - email
-        -password
-        - role (writer, admin)
+1. DB create
+  - categories
+    - id [PK, AI]
+    - name [varchar]
 
-    -posts
-        - id [PK,AI]
-        - title [varchar]
-        - content [text]
-        - author_id(FK)
-        - category_id [FK]
-        - status[create,public, reject]
-        - published_at[timestamp,NULL]
-        - created_at(timestamp)
+  - users 
+    - id [PK, AI]
+    - name [varchar]
+    - email [varchar, UNIQUE]
+    - password [varchar] <- hash
+    - role (writer, admin) [varchar]
 
-2. Design (front side)
-    -reader
-        -all blogs posts (home)
-        - detail post
-    writer
-        -Register/login
-        -CRUD(create, retrieve, update, delete)-blog posts
-3. Design(Back side)
-    -admin
-        -CRUD (categories)
-        -post list
-        -post detail
+  - posts 
+    - id [PK, AI]
+    - title [varchar]
+    - content [text]
+    - author_id [FK]
+    - category_id [FK]
+    - status [created, published, rejected] -> [varchar]
+    - published_at [timestamp, NULL]
+    - created_at [timestamp]
 
-        --------------------
+2. Design (Front Side)
+  - Reader 
+    - All blogs posts (Home)
+    - Deatil Post 
+  - Writer
+    - Register / Login 
+    - CRUD (Create, Retrieve, Update, Delete) - Blog Posts
 
-        status
-        -id(pk)
-        -name(varchar)
-        -gender(varchar)
-        -address(text)
+3. Design (Back Side)
+  - Admin 
+    - CRUD (Categories)
+    - Post list 
+    - Post detail 
 
 
 
-        
+
+---------------------------------------------------------------
+
+- students
+  - id [PK, AI]
+  - name [Varchar] - text 
+  - gender [Varchar] - radio | select option
+  - address [Text] - textarea
+  - 
 
 
+
+- TODO 
+  - 
+  - Create Post by author 
+  - Public / reject by admin 
+  - Retrieve posts for readers
+
+
+- Done  
+  - Auth (Register / Login)
+    - Register 
+      - create form 
+      - submit form 
+      - save into user table
+      - duplicate email case ** to fix 
+    - Login 
+      - create form 
+      - submit form 
+      - retrieve one user with email
+      - verify password 
+      - redirect
+  

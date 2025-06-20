@@ -68,7 +68,16 @@ if(isset($_GET['id'])) {
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-4 text w-75">Post Detail Page</h1>
-                    <div class="card mb-3">
+
+                    <div class="card mb-3"> 
+                       
+                        <?php if ($post['status'] == 'created'): ?>                              
+                        <div class="card-header">
+                            <a onclick= "return confirm('Are you sure to public?')" class="btn btn-info" href="edit.php?id=<?=$post['id']?>&key=publish">public</a>
+                            <a onclick= "return confirm('Are you sure to public?')" class="btn btn-danger" href="edit.php?id=<?=$post['id']?>&key=reject">Reject</a>
+                        </div>
+                        <?php endif; ?>
+
                         <div class="card-body">
                             <h5 class="card-title"><?php echo $post['title']; ?></h5>
                              <p class="card-text"><small class="text-body-secondary">Category: <?php echo $post['category_name']; ?> </small></p>

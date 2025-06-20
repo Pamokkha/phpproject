@@ -1,39 +1,45 @@
 <?php 
-include '../dbconnect.php';
-session_start();
-if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    $name = htmlspecialchars ($_POST['userName']);
-    $email = htmlspecialchars ($_POST['userEmail']);
-    $password = htmlspecialchars ($_POST['userPassword']);
-    $confirmPassword = htmlspecialchars ($_POST['userComfirmPassword']);
-    // echo $name .','. $email .', '. $password .', '. $confirmPassword;
-
+  include '../dbconnect.php';
+  session_start();
+  if (isset($_SESSION['login'])) {
+    header('Location: profile.php');
+    exit();
+  }
+  $errors = [];
+  if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = htmlspecialchars($_POST['userName']);
+    $email = htmlspecialchars($_POST['userEmail']);
+    $password = htmlspecialchars($_POST['userPassword']);
+    $confirmPassword = htmlspecialchars($_POST['userConfirmPassword']);
+    // echo $name .','. $email .','. $password .','. $confirmPassword;
     $stmt = $pdo->prepare("SELECT * FROM users WHERE email = :email");
     $stmt->execute([
-        'email' => $email
+      'email' => $email
     ]);
-    $user = $stmt->fetch();
+    $user = $stmt->fetch(); // boolean - false
     // var_dump($user);
-
-    if($password != $confirmPassword){ // password does not match
-        header('Location: register.php');
-        exit();
-    } else if (!$user) {
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-        // echo "Password does not match";
-
-        $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
-        $stmt->execute([
-            'name' => $name,
-            'email' => $email,
-            'password' => $hashedPassword
-        ]);
-        header('Location: login.php');   
-    } else {
-        header('Location: register.php');
-        exit();
+    if($password != $confirmPassword) { // password not match
+      $errors['password'] = 'Password not match';
+      // header('Location: register.php');
+      // var_dump($errors);
+      // exit();
+    } else if ($user) { // email exist
+      $errors['email'] = 'Email already exist';
+      // header('Location: register.php');
+      // var_dump($errors);
+      // exit();
+    } else { // email not exist
+      $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+      // echo $hashedPassword;
+      $stmt = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:name, :email, :password)");
+      $stmt->execute([
+        'name' => $name,
+        'email' => $email,
+        'password' => $hashedPassword
+      ]);
+      header('Location: login.php');
     }
-}
+  }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -51,43 +57,40 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     <body>
         <!-- Responsive navbar-->
         <?php include 'navbar.php'; ?>
-        <!-- Page header with logo and tagline-->
-        <!-- <header class="py-5 bg-light border-bottom mb-4">
-            <div class="container">
-                <div class="text-center my-5">
-                    <h1 class="fw-bolder">Welcome to Blog Home!</h1>
-                    <p class="lead mb-0">A Bootstrap 5 starter layout for your next blog homepage</p>
-                </div>
-            </div>
-        </header> -->
-        <!-- Register page-->
+        <!-- Page content-->
         <div class="container py-5">
             <div class="row justify-content-md-center">
-               <div class="col-lg-6">
-                    <h3>Register </h3>
-                    <form action="#" method="post" class="p-4 p-md-5 border rounded-3 bg-light">
-                        <div class="form-floating mb-3">
-                            <input type="text" name="userName" id="floatingInputname" class="form-control" placeholder="Shwe U">
-                            <label for="floatingInputname">Name</label>
-                        </div>
-                        <div class="form-floating mb-3">
-
-                            <input type="text" name="userEmail" id="floatingInputname" class="form-control" placeholder="name@gmail">
-                            <label for="floatingInputname">Email Address</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" name="userPassword" id="floatingInputname" class="form-control" placeholder="Password">
-                            <label for="floatingPassword">Password</label>
-                        </div>
-                        <div class="form-floating mb-3">
-                            <input type="password" name="userComfirmPassword" id="floatingInputname" class="form-control" placeholder="Comfirm Password">
-                            <label for="floatingcomfirmPassword">Comfirm Password</label>
-                        </div>
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Register</button>
-                        </div>
-                    </form>
-               </div>
+                <!-- Blog entries-->
+                <div class="col-lg-6">
+                  <h3>Register</h3>
+                  <form action="#" method="post" class="p-4 p-md-5 border rounded-3 bg-light">
+                    <div class="form-floating mb-3">
+                      <input type="text" class="form-control" id="floatingInputName" placeholder="shewu" name="userName" required>
+                      <label for="floatingInputName">Name</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                      <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com" name="userEmail" required>
+                      <label for="floatingInput">Email address</label>
+                      <div class="text-danger">
+                        <?php if (isset($errors['email'])) { echo $errors['email']; } ?>
+                      </div>
+                    </div>
+                    <div class="form-floating mb-3">
+                      <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="userPassword" required>
+                      <label for="floatingPassword">Password</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                      <input type="password" class="form-control" id="floatingConfirmPassword" placeholder="ConfirmPassword" name="userConfirmPassword" required>
+                      <label for="floatingConfirmPassword">Confirm Password</label>
+                      <div class="text-danger">
+                        <?php if (isset($errors['password'])) { echo $errors['password']; } ?>
+                      </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                      <button class="btn btn-primary" type="submit">Register</button>
+                    </div>
+                  </form>
+                </div>
             </div>
         </div>
         <!-- Footer-->
@@ -97,5 +100,3 @@ if (isset($_SERVER['REQUEST_METHOD']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         <!-- Core theme JS-->
         <script src="js/scripts.js"></script>
     </body>
-</html>
-

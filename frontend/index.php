@@ -1,4 +1,23 @@
-<?php session_start(); ?>
+<?php session_start();
+include '../dbconnect.php';
+//select all posts (published)
+$stmt = $pdo->query("SELECT * FROM posts WHERE status = 'published' ORDER BY id DESC");
+$posts = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+function getFirstWords($content, $limit = 20) {
+    // Strip HTML tags if needed
+    $text = strip_tags($content);
+    
+    // Convert to array of words
+    $words = preg_split('/\s+/', $text, -1, PREG_SPLIT_NO_EMPTY);
+    
+    // Get the first $limit words
+    $firstWords = array_slice($words, 0, $limit);
+    
+    // Return as string
+    return implode(' ', $firstWords) . (count($words) > $limit ? '...' : '');
+  }
+ ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -30,7 +49,7 @@
                 <!-- Blog entries-->
                 <div class="col-lg-8">
                     <!-- Featured blog post-->
-                    <div class="card mb-4">
+                    <!-- <div class="card mb-4">
                         <a href="#!"><img class="card-img-top" src="https://dummyimage.com/850x350/dee2e6/6c757d.jpg" alt="..." /></a>
                         <div class="card-body">
                             <div class="small text-muted">January 1, 2023</div>
@@ -38,53 +57,24 @@
                             <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam. Dicta expedita corporis animi vero voluptate voluptatibus possimus, veniam magni quis!</p>
                             <a class="btn btn-primary" href="#!">Read more →</a>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- Nested row for non-featured blog posts-->
                     <div class="row">
+                        <?php foreach($posts as $post): ?>
+                            <?php $timestamp = strtotime($post['published_at']); ?>
                         <div class="col-lg-6">
-                            <!-- Blog post-->
+                            <!-- Blog post-->                           
                             <div class="card mb-4">
-                                <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
+                                <!-- <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a> -->
                                 <div class="card-body">
-                                    <div class="small text-muted">January 1, 2023</div>
-                                    <h2 class="card-title h4">Post Title</h2>
-                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla.</p>
-                                    <a class="btn btn-primary" href="#!">Read more →</a>
-                                </div>
-                            </div>
-                            <!-- Blog post-->
-                            <div class="card mb-4">
-                                <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
-                                <div class="card-body">
-                                    <div class="small text-muted">January 1, 2023</div>
-                                    <h2 class="card-title h4">Post Title</h2>
-                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla.</p>
-                                    <a class="btn btn-primary" href="#!">Read more →</a>
-                                </div>
-                            </div>
+                                    <div class="small text-muted"><?= date('F j, Y', $timestamp);?></div>
+                                    <h2 class="card-title h4"><?= $post['title']; ?></h2>
+                                    <p class="card-text"><?= getFirstWords($post['content']);20 ?></p>
+                                    <a class="btn btn-primary" href="post.php?id=<?=$post['id']?>">Read more →</a>
+                                </div>                                 
+                            </div>                          
                         </div>
-                        <div class="col-lg-6">
-                            <!-- Blog post-->
-                            <div class="card mb-4">
-                                <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
-                                <div class="card-body">
-                                    <div class="small text-muted">January 1, 2023</div>
-                                    <h2 class="card-title h4">Post Title</h2>
-                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla.</p>
-                                    <a class="btn btn-primary" href="#!">Read more →</a>
-                                </div>
-                            </div>
-                            <!-- Blog post-->
-                            <div class="card mb-4">
-                                <a href="#!"><img class="card-img-top" src="https://dummyimage.com/700x350/dee2e6/6c757d.jpg" alt="..." /></a>
-                                <div class="card-body">
-                                    <div class="small text-muted">January 1, 2023</div>
-                                    <h2 class="card-title h4">Post Title</h2>
-                                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Reiciendis aliquid atque, nulla? Quos cum ex quis soluta, a laboriosam.</p>
-                                    <a class="btn btn-primary" href="#!">Read more →</a>
-                                </div>
-                            </div>
-                        </div>
+                        <?php endforeach; ?>
                     </div>
                     <!-- Pagination-->
                     <nav aria-label="Pagination">

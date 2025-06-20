@@ -58,7 +58,7 @@ include '../../dbconnect.php';
 
                     <!-- Page Heading -->
                     <h1 class="h3 mb-4 text w-75">Posts List Page</h1>
-                    <a href="create.php" class="btn btn-primary float-right  mx-5 mb-3">Add Category</a>
+                    
                     
                     <table class="table table-bordered table-hover mt-3">
                         <thead class="thead-dark">
@@ -80,6 +80,14 @@ include '../../dbconnect.php';
                                 // print_r($categories);
                                 $i=1;
                                 foreach ($posts as $post):
+                                    $color= "";
+                                    if($post['status'] == "published"){
+                                        $color = "text-primary";
+                                    } else if($post['status'] == "rejected"){
+                                        $color = "text-danger";
+                                    } else if($post['status'] == "created"){
+                                        $color = "text-success";
+                                    }
                             ?>
                             <tr>
                                 <td><?= $i++; ?></td>
@@ -88,7 +96,7 @@ include '../../dbconnect.php';
                                 <td><?= $post['category_name'] ?></td>
                                 
                                 <td>
-                                    <?= $post['status'] ?>
+                                      <strong class="<?= $color ?>"><?= $post['status'] ?></strong>
                                     <p><?= $post['created_at'] ?></p>
                                 </td>
                                 <td>
